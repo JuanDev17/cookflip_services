@@ -32,9 +32,11 @@ public class RecipeController {
     // Recipe is model
     // no list, we want 1
     public ResponseEntity<Recipe> getRecipesById(@PathVariable int id) {
-       Recipe recipeId = recipeService.getRecipesById(id);
-
-       return ResponseEntity.ok(recipeId);
+        return recipeService.getRecipeById(id)
+                // this returns 200 OK
+                .map(ResponseEntity::ok)
+                // 404 not found - missing ID
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/recipes")

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class RecipeService {
@@ -35,14 +36,14 @@ public class RecipeService {
         return recipeRepository.findAll();
     }
 
-    public Recipe getRecipesById(int id){
+    public Optional<Recipe> getRecipeById(int id){
 //        Recipe recipe = recipes.stream()
 //                .filter(r -> r.getId() == id)
 //                .findFirst()
 //                .orElse(null);
 //        return recipe;
 //        return recipes.get(id);
-          return recipeRepository.findById(id).orElse(null);
+          return recipeRepository.findById(id);
     }
 
     public Recipe addRecipe(Recipe recipe){
