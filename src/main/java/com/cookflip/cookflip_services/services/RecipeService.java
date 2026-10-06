@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +53,17 @@ public class RecipeService {
 
     }
 
-    public void deleteRecipe(int id){
-        recipeRepository.deleteById(id);
+    public boolean deleteRecipe(int id){
+        // findById returns Optional<>
+       Optional<Recipe> recipe = recipeRepository.findById(id);
+
+        if(recipe.isEmpty()) {
+            return false;
+        }
+
+        recipeRepository.delete(recipe.get());
+
+        return true;
     }
 
     public Recipe updateRecipeById(int id, Recipe recipe) {
