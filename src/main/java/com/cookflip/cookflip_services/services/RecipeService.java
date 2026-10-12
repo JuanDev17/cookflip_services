@@ -66,16 +66,25 @@ public class RecipeService {
         return true;
     }
 
-    public Recipe updateRecipeById(int id, Recipe recipe) {
+    public Optional<Recipe> updateRecipeById(int id, Recipe recipe) {
 
-        Recipe singleRecipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Id not found"));
+        // grab variable
+        Optional<Recipe> singleRecipe = recipeRepository.findById(id);
 
-        singleRecipe.setTitle(recipe.getTitle());
-        singleRecipe.setDescription(recipe.getDescription());
-        singleRecipe.setCookTime(recipe.getCookTime());
+        if(singleRecipe.isEmpty()){
+            return Optional.empty();
+        }
 
-        return recipeRepository.save(singleRecipe);
+        Recipe existingRecipeId = singleRecipe.get();
+                //.orElseThrow(() -> new EntityNotFoundException("Id not found"));
+
+        existingRecipeId.setTitle(recipe.getTitle());
+        existingRecipeId.setDescription(recipe.getDescription());
+        existingRecipeId.setCookTime(recipe.getCookTime());
+
+        recipeRepository.save(existingRecipeId);
+
+        return Optional.of(existingRecipeId);
     }
 
 

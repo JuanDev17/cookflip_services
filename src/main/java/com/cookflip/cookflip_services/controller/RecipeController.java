@@ -8,8 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import com.cookflip.cookflip_services.models.Recipe;
 import com.cookflip.cookflip_services.services.RecipeService;
 
+import com.cookflip.cookflip_services.exceptions.RecipeNotFoundException;
+
 // importing list ( hold array ? )
 import java.util.List;
+import java.util.Optional;
+import jakarta.validation.Valid;
 
 @RestController
 public class RecipeController {
@@ -29,18 +33,16 @@ public class RecipeController {
     }
 
     @GetMapping("/recipes/{id}")
-    // Recipe is model
-    // no list, we want 1
     public ResponseEntity<Recipe> getRecipesById(@PathVariable int id) {
-        return recipeService.getRecipeById(id)
-                // this returns 200 OK
-                .map(ResponseEntity::ok)
-                // 404 not found - missing ID
-                .orElse(ResponseEntity.notFound().build());
+
+        Recipe recipe = recipeService.getRecipeById(id)
+                .orElseThrow(() -> new RecipeNotFoundException(id));
+
+        return ResponseEntity.ok(recipe);
     }
 
     @PostMapping("/recipes")
-    public ResponseEntity<Recipe> addRecipe(@RequestBody Recipe recipe){
+    public ResponseEntity<Recipe> addRecipe(@Valid @RequestBody Recipe recipe){
         Recipe addedRecipes = recipeService.addRecipe(recipe);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(addedRecipes);
@@ -52,16 +54,20 @@ public class RecipeController {
         boolean deleted = recipeService.deleteRecipe(id);
 
         if (!deleted) {
-            return ResponseEntity.notFound().build();
+            throw new RecipeNotFoundException(id);
         }
 
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/recipes/{id}")
-    public ResponseEntity<Recipe> updateRecipe(@PathVariable int id, @RequestBody Recipe recipe){
-       Recipe updatedRecipe = recipeService.updateRecipeById(id, recipe);
+    public ResponseEntity<Recipe> updateRecipe(
+            @PathVariable int id,
+            @Valid @RequestBody Recipe recipe) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(updatedRecipe);
+        Recipe updatedRecipe = recipeService.updateRecipeById(id, recipe)
+                .orElseThrow(() -> new RecipeNotFoundException(id));
+
+        return ResponseEntity.ok(updatedRecipe);
     }
 }

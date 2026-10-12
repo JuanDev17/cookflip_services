@@ -3,6 +3,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Recipe {
@@ -11,8 +13,11 @@ public class Recipe {
     // Hibernate/JPA is telling PostgreSQL to use its identity mechanism to generate the ID.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotBlank(message = "Title field can't be blanked")
     private String title;
+    @NotBlank(message = "Description field can't be blanked")
     private String description;
+    @Min(value = 1, message = "Cook time must be at least one minute.")
     private int cookTime;
 
     // JPA needs this to create empty object
